@@ -1,0 +1,27 @@
+apply from: 'fabric-mod.gradle'
+apply from: 'modmuss50-maven.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+archivesBaseName = project.archive_name
+version = project.mod_version
+group = project.maven_group
+
+def ENV = System.getenv()
+version = version + "+" + (ENV.BUILD_NUMBER ? ("build." + ENV.BUILD_NUMBER) : "custom")
+
+ext.mod = { String localOverrideKey, String dep ->
+	File file = file("../.${localOverrideKey}-local");
+	if (file.exists()) {
+		dependencies.implementation(dep)
+	} else {
+		dependencies.modImplementation(dep)
+	}
+	dependencies.include(dep)
+}
+
+ext.includeMod = { String localOverrideKey, String dep ->
+	mod(localOverrideKey, dep)
+	dependencies.include(dep)
+}

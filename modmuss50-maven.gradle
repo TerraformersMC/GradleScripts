@@ -1,0 +1,27 @@
+apply plugin: 'maven-publish'
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+
+			afterEvaluate {
+				artifact remapJar
+			}
+		}
+	}
+
+	repositories {
+		if (project.hasProperty('mavenPass')) {
+			maven {
+				url = "http://mavenupload.modmuss50.me/"
+				credentials {
+					username = "buildslave"
+					password = project.getProperty('mavenPass')
+				}
+			}
+		}
+	}
+}

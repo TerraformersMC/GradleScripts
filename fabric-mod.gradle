@@ -1,0 +1,48 @@
+import net.fabricmc.loom.LoomGradlePlugin
+
+buildscript {
+	repositories {
+		jcenter()
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		gradlePluginPortal()
+		mavenLocal()
+	}
+
+	dependencies {
+		classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: LoomGradlePlugin
+
+processResources {
+	inputs.property "version", project.version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include "fabric.mod.json"
+		expand "version": project.version
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude "fabric.mod.json"
+	}
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	archiveClassifier.set("sources")
+	from sourceSets.main.allSource
+}
+
+jar {
+	from "LICENSE"
+}
