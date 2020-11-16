@@ -11,7 +11,7 @@ group = project.maven_group
 def ENV = System.getenv()
 version = version + "+" + (ENV.BUILD_NUMBER ? ("build." + ENV.BUILD_NUMBER) : "custom")
 
-ext.mod = { String localOverrideKey, String dep ->
+ext.mod = { String localOverrideKey, Object dep ->
 	File file = file("../.${localOverrideKey}-local");
 	if (file.exists()) {
 		dependencies.implementation(dep)
@@ -21,7 +21,7 @@ ext.mod = { String localOverrideKey, String dep ->
 	dependencies.include(dep)
 }
 
-ext.includeMod = { String localOverrideKey, String dep ->
+ext.includeMod = { String localOverrideKey, Object dep ->
 	mod(localOverrideKey, dep)
 	dependencies.include(dep)
 }
