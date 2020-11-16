@@ -1,5 +1,5 @@
-apply from: 'fabric-mod.gradle'
-apply from: 'modmuss50-maven.gradle'
+apply from: 'https://github.com/TerraformersMC/GradleScripts/blob/main/fabric-mod.gradle'
+apply from: 'https://github.com/TerraformersMC/GradleScripts/blob/main/modmuss50-maven.gradle'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
