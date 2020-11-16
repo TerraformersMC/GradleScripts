@@ -39,7 +39,7 @@ tasks.withType(JavaCompile) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier.set("sources")
+	classifier = "sources"
 	from sourceSets.main.allSource
 }
 
