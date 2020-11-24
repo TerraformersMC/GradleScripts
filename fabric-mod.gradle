@@ -16,6 +16,16 @@ buildscript {
 	}
 }
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+archivesBaseName = project.archive_name
+version = project.mod_version
+group = project.maven_group
+
+def ENV = System.getenv()
+version = version + "+" + (ENV.BUILD_NUMBER ? ("build." + ENV.BUILD_NUMBER) : "custom")
+
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'

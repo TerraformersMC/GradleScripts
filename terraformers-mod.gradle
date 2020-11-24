@@ -1,16 +1,6 @@
 apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.0/fabric-mod.gradle'
 apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.0/modmuss50-maven.gradle'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-archivesBaseName = project.archive_name
-version = project.mod_version
-group = project.maven_group
-
-def ENV = System.getenv()
-version = version + "+" + (ENV.BUILD_NUMBER ? ("build." + ENV.BUILD_NUMBER) : "custom")
-
 ext.mod = { String localOverrideKey, Object dep ->
 	File file = file("../.${localOverrideKey}-local");
 	if (file.exists()) {
@@ -18,7 +8,6 @@ ext.mod = { String localOverrideKey, Object dep ->
 	} else {
 		dependencies.modImplementation(dep)
 	}
-	dependencies.include(dep)
 }
 
 ext.includeMod = { String localOverrideKey, Object dep ->
