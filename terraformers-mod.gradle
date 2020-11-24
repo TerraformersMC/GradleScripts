@@ -1,5 +1,5 @@
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.0/fabric-mod.gradle'
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.0/modmuss50-maven.gradle'
+apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.1/fabric-mod.gradle'
+apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.1/modmuss50-maven.gradle'
 
 ext.mod = { String localOverrideKey, Object dep ->
 	File file = file("../.${localOverrideKey}-local");
