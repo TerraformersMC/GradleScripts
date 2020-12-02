@@ -5,11 +5,15 @@ ext.mod = { String localOverrideKey, Object dep ->
 	File file = file("../.${localOverrideKey}-local");
 	if (file.exists()) {
 		dependencies.implementation(dep) {
-			exclude(group: "net.fabricmc.fabric-api")
+			if (!localOverrideKey.equals("fabric-api")) {
+				exclude(group: "net.fabricmc.fabric-api")
+			}
 		}
 	} else {
 		dependencies.modImplementation(dep) {
-			exclude(group: "net.fabricmc.fabric-api")
+			if (!localOverrideKey.equals("fabric-api")) {
+				exclude(group: "net.fabricmc.fabric-api")
+			}
 		}
 	}
 }
@@ -17,6 +21,8 @@ ext.mod = { String localOverrideKey, Object dep ->
 ext.includeMod = { String localOverrideKey, Object dep ->
 	mod(localOverrideKey, dep)
 	dependencies.include(dep) {
-		exclude(group: "net.fabricmc.fabric-api")
+		if (!localOverrideKey.equals("fabric-api")) {
+			exclude(group: "net.fabricmc.fabric-api")
+		}
 	}
 }
