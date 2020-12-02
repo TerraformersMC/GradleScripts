@@ -1,16 +1,22 @@
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.1/fabric-mod.gradle'
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.1/modmuss50-maven.gradle'
+apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.2-beta/fabric-mod.gradle'
+apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.2-beta/modmuss50-maven.gradle'
 
 ext.mod = { String localOverrideKey, Object dep ->
 	File file = file("../.${localOverrideKey}-local");
 	if (file.exists()) {
-		dependencies.implementation(dep)
+		dependencies.implementation(dep) {
+			exclude(group: "net.fabricmc.fabric-api")
+		}
 	} else {
-		dependencies.modImplementation(dep)
+		dependencies.modImplementation(dep) {
+			exclude(group: "net.fabricmc.fabric-api")
+		}
 	}
 }
 
 ext.includeMod = { String localOverrideKey, Object dep ->
 	mod(localOverrideKey, dep)
-	dependencies.include(dep)
+	dependencies.include(dep) {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }

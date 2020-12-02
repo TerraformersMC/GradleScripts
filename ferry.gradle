@@ -14,7 +14,7 @@ buildscript {
 apply plugin: net.dumbcode.gradlehook.GradleWebhookPlugin
 apply plugin: com.matthewprenger.cursegradle.CurseGradlePlugin
 
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.1/terraformers-mod.gradle'
+apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/1.2-beta/terraformers-mod.gradle'
 
 def curseReleaseType = "release"
 def releaseChangelog = "No Changelog Available"
