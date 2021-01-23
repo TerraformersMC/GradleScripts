@@ -70,6 +70,9 @@ task generateChangelog {
 		if (processedLine.startsWith("\"")) {
 			processedLine = processedLine.substring(1)
 		}
+		if (processedLine.endsWith("\"")) {
+			processedLine = processedLine.substring(0, processedLine.length() - 1)
+		}
 		println "Reading line: $processedLine"
 
 		if (processedLine.startsWith("- ")) {
