@@ -20,26 +20,12 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 archivesBaseName = project.archive_name
-version = project.hasProperty('mod_version') ? project.mod_version : 'null'
 group = project.maven_group
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: LoomGradlePlugin
-
-processResources {
-	inputs.property "version", project.version
-
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
-}
 
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"

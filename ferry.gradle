@@ -92,6 +92,19 @@ task generateChangelog {
 	println releaseChangelog
 }
 
+processResources {
+	inputs.property "version", version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include "fabric.mod.json"
+		expand "version": version
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude "fabric.mod.json"
+	}
+}
+
 curseforge {
 	if (System.getenv().CURSEFORGE_TOKEN) {
 		apiKey = System.getenv().CURSEFORGE_TOKEN
