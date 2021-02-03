@@ -2,7 +2,6 @@ import net.fabricmc.loom.LoomGradlePlugin
 
 buildscript {
 	repositories {
-		jcenter()
 		maven {
 			name = 'Fabric'
 			url = 'https://maven.fabricmc.net/'
