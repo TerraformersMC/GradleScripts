@@ -28,7 +28,7 @@ group = project.maven_group
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: LoomGradlePlugin
+apply plugin: 'fabric-loom'
 
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
