@@ -20,7 +20,7 @@ apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 apply plugin: com.modrinth.minotaur.Minotaur
 apply plugin: 'maven-publish'
 
-apply from: 'https://raw.githubusercontent.com/TerraformersMC/GradleScripts/2.0/fabric-mod.gradle'
+apply from: 'https://raw.githubusercontent.com/jackassmc/GradleScripts/2.0/fabric-mod.gradle'
 
 version = getVersion()
 
