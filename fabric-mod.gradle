@@ -15,12 +15,12 @@ buildscript {
 	}
 
 	dependencies {
-		classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
+		classpath "net.fabricmc:fabric-loom:0.8-SNAPSHOT"
 	}
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archive_name
 group = project.maven_group
@@ -28,7 +28,7 @@ group = project.maven_group
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: LoomGradlePlugin
+apply plugin: 'fabric-loom'
 
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
