@@ -225,7 +225,7 @@ void sendDiscordWebhook() {
                 }
                 field {
                     name = "Downloads:"
-                    value = "[$modrinth_emote Modrinth]($modrinthDownloadLink)\n[$curseforge_emote CurseForge]($curseforgeDownloadLink)\n[$github_emote GitHub]($githubDownloadLink)"
+                    value = "[$modrinth_emote Modrinth]($modrinthDownloadLink)\n[$curseforge_emote CurseForge]($curseforgeDownloadLink)"
                 }
                 footer {
                     text = "A $project.loader_name Mod"
