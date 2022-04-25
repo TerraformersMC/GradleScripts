@@ -10,7 +10,7 @@ buildscript {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
         classpath "org.kohsuke:github-api:1.114"
         classpath "org.ajoberstar.grgit:grgit-gradle:4.1.0"
-        classpath "gradle.plugin.com.modrinth.minotaur:Minotaur:1.1.0"
+        classpath "com.modrinth.minotaur:Minotaur:2.1.2"
     }
 }
 
@@ -253,26 +253,25 @@ String getBranch() {
     return branch.substring(branch.lastIndexOf("/") + 1)
 }
 
-task publishModrinth(type: com.modrinth.minotaur.TaskModrinthUpload) {
-    token = System.getenv().MODRINTH_TOKEN
+modrinth {
     projectId = project.modrinth_id
-    versionNumber = project.version
     versionName = "$project.project_name v$version for $project.minecraft_version"
     uploadFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
     changelog = releaseChangelog
-    releaseType = curseReleaseType
+    versionType = curseReleaseType
     project.modrinth_game_versions.split(", ").each {
-        String gameVersion -> addGameVersion gameVersion
+        gameVersions.add it
     }
     project.modrinth_mod_loaders.split(", ").each {
-        String modLoader -> addLoader modLoader
+        loaders.add it
     }
-    doLast {
-        if (wasUploadSuccessful()) {
-            modrinthDownloadLink = "https://modrinth.com/mod/$project.modrinth_slug/version/$uploadInfo.id"
-            sendDiscordWebhook()
-        }
-    }
+}
+
+tasks.modrinth.doLast {
+  if (tasks.modrinth.wasUploadSuccessful()) {
+    modrinthDownloadLink = "https://modrinth.com/mod/$project.modrinth_slug/version/$version"
+    sendDiscordWebhook()
+  }
 }
 
 String getVersion() {
