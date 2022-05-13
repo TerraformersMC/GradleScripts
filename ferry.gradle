@@ -202,7 +202,7 @@ void sendDiscordWebhook() {
     println "GitHub download: $githubDownloadLink"
     if (curseforgeDownloadLink != null && modrinthDownloadLink != null && githubDownloadLink != null && System.getenv().DISCORD_ANNOUNCEMENT_WEBHOOK) {
         println "Preparing webhook"
-        def release_url = curseforgeDownloadLink
+        def release_url = modrinthDownloadLink
         def discordChangelog = createDiscordChangelog(release_url)
 
         def result = DiscordBuilder.createForm {
