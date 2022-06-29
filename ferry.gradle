@@ -265,6 +265,26 @@ modrinth {
     project.modrinth_mod_loaders.split(", ").each {
         loaders.add it
     }
+    if (project.hasProperty("modrinth_required_dep_ids")) {
+        project.modrinth_required_dependencies.split(", ").each {
+            deps.add new ModDependency(it, "required")
+        }
+    }
+    if (project.hasProperty("modrinth_optional_dependencies")) {
+        project.modrinth_optional_dependencies.split(", ").each {
+            deps.add new ModDependency(it, "optional")
+        }
+    }
+    if (project.hasProperty("modrinth_incompatible_dependencies")) {
+        project.modrinth_incompatible_dependencies.split(", ").each {
+            deps.add new ModDependency(it, "incompatible")
+        }
+    }
+    if (project.hasProperty("modrinth_embedded_dependencies")) {
+        project.modrinth_embedded_dependencies.split(", ").each {
+            deps.add new ModDependency(it, "embedded")
+        }
+    }
 }
 
 tasks.modrinth.doLast {
