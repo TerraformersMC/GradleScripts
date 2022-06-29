@@ -253,6 +253,8 @@ String getBranch() {
     return branch.substring(branch.lastIndexOf("/") + 1)
 }
 
+import com.modrinth.minotaur.dependencies.ModDependency
+
 modrinth {
     projectId = project.modrinth_id
     versionName = "$project.project_name v$version for $project.minecraft_version"
