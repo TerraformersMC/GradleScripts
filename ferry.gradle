@@ -148,6 +148,8 @@ tasks.getByName("curseforge").doLast {
 }
 
 task github {
+	dependsOn build
+
     onlyIf {
         System.getenv().GITHUB_TOKEN
     }
