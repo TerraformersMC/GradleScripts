@@ -211,7 +211,7 @@ import com.modrinth.minotaur.dependencies.ModDependency
 
 modrinth {
     projectId = project.modrinth_id
-    versionName = "$project.project_name v$version for $project.minecraft_version"
+    versionName = "v$version for $project.minecraft_version"
     uploadFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
     changelog = releaseChangelog
     versionType = curseReleaseType
