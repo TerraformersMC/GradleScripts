@@ -1,5 +1,3 @@
-import net.fabricmc.loom.LoomGradlePlugin
-
 buildscript {
 	repositories {
 		maven {
@@ -15,9 +13,11 @@ buildscript {
 	}
 
 	dependencies {
-		classpath "net.fabricmc:fabric-loom:0.10-SNAPSHOT"
+		classpath "net.fabricmc:fabric-loom:1.3-SNAPSHOT"
 	}
 }
+
+import net.fabricmc.loom.LoomGradlePlugin
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -29,16 +29,73 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'fabric-loom'
-
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
-}
+apply plugin: 'maven-publish'
 
 task sourcesJar(type: Jar, dependsOn: classes) {
 	archiveClassifier.set("sources")
 	from sourceSets.main.allSource
 }
 
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
 jar {
-	from "LICENSE"
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName.get()}"}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+
+	setupRepositories(repositories)
+}
+
+void setupRepositories(RepositoryHandler repositories) {
+	//repositories.mavenLocal() // uncomment for testing
+	def ENV = System.getenv()
+	if (ENV.MAVEN_URL) {
+		repositories.maven {
+			url ENV.MAVEN_URL
+			credentials {
+				username ENV.MAVEN_USERNAME
+				password ENV.MAVEN_PASSWORD
+			}
+		}
+	}
+}
+
+ext.mod = { String localOverrideKey, Object dep ->
+	File file = file("../.${localOverrideKey}-local");
+	if (file.exists()) {
+		dependencies.implementation(dep)
+	} else {
+		dependencies.modImplementation(dep)
+	}
+}
+
+ext.includeMod = { String localOverrideKey, Object dep ->
+	mod(localOverrideKey, dep)
+	dependencies.include(dep)
 }

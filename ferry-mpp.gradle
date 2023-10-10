@@ -1,0 +1,352 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "me.modmuss50:mod-publish-plugin:0.3.6"
+        classpath "net.dumbcode.gradlehook:GradleHook:2.0.2"
+        classpath "org.kohsuke:github-api:1.316"
+        classpath "org.ajoberstar.grgit:grgit-gradle:4.1.0"
+    }
+}
+
+apply plugin: me.modmuss50.mpp.MppPlugin
+apply plugin: net.dumbcode.gradlehook.GradleWebhookPlugin
+apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
+
+ext.curseReleaseType = "release"
+ext.releaseChangelog = "No Changelog Available"
+ext.stabilitySuffix = ""
+ext.curseforgeDownloadLink = null
+ext.modrinthDownloadLink = null
+ext.githubDownloadLink = null
+ext.releaseType = project.default_release_type
+
+version = getVersion()
+
+
+// Publishing configuration
+
+publishMods {
+    // Set the main file to be uploaded
+    file = jar.archiveFile
+
+    // Markdown changelog
+    changelog = releaseChangelog
+
+    // Defaults to the Gradle project version
+    //version = getVersion()
+
+    // Specify the release type
+    if (releaseType == "stable") {
+        type = STABLE
+    } else if (releaseType == "beta") {
+        type = BETA
+    } else {
+        type = ALPHA
+    }
+
+    // The display name/release title, this defaults to the Gradle project name + version
+    displayName = project.project_name
+
+    // A ConfigurableFileCollection of addional files that are uploaded alongside the main file
+    //additionalFiles.from(jar.archiveFile)
+
+    // The max number of times to retry on server error, defaults to 3.
+    //maxRetries = 5
+
+    // When dry run is enabled the release assets will be saved to the build directory for testing.
+    dryRun = project.hasProperty("dryRun")
+
+    if (project.hasProperty("github") && providers.environmentVariable("GITHUB_REPOSITORY").isPresent()) {
+        github {
+            if (providers.environmentVariable("GITHUB_TOKEN").isPresent()) {
+                accessToken = providers.environmentVariable("GITHUB_TOKEN").get()
+            } else {
+                accessToken = "undefined"
+                dryRun = true
+            }
+
+            repository = providers.environmentVariable("GITHUB_REPOSITORY").get()
+
+            commitish = getBranch()
+        }
+    }
+
+    if (project.hasProperty("modrinth")) {
+        modrinth {
+            if (providers.environmentVariable("MODRINTH_TOKEN").isPresent()) {
+                accessToken = providers.environmentVariable("MODRINTH_TOKEN").get()
+            } else {
+                accessToken = "undefined"
+                dryRun = true
+            }
+
+            projectId = project.modrinth_id
+
+            // A list of the versions the release supports
+            project.modrinth_game_versions.split(", ").each {
+                minecraftVersions.add it
+            }
+
+            // A list of mod loaders the release supports
+            project.modrinth_mod_loaders.split(", ").each {
+                modLoaders.add it
+            }
+        }
+    }
+
+    if (project.hasProperty("curseforge")) {
+        curseforge {
+            if (providers.environmentVariable("CURSEFORGE_TOKEN").isPresent()) {
+                accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").get()
+            } else {
+                accessToken = "undefined"
+                dryRun = true
+            }
+
+            projectId = project.curseforge_id
+
+            // A list of the versions the release supports
+            project.curseforge_game_versions.split(", ").each {
+                minecraftVersions.add it
+            }
+        }
+    }
+}
+
+tasks.publishMods.doLast {
+    if (project.hasProperty("github") && providers.environmentVariable("GITHUB_REPOSITORY").isPresent()) {
+        // TODO: There is no way to get the GH URL from mod-publish-plugin yet.
+        //       We'll just make it up, but we should get it right for Terraformers releases at least.
+        githubDownloadLink = providers.environmentVariable("GITHUB_REPOSITORY").get() + "/releases/tag/" + project.getProperty("currentTag")
+    }
+
+    if (project.hasProperty("modrinth")) {
+        def fileId = version
+        modrinthDownloadLink = "https://modrinth.com/mod/$project.modrinth_slug/version/$fileId"
+    }
+
+    if (project.hasProperty("curseforge")) {
+        // TODO: There is no way to get the fileId from mod-publish-plugin or from CF itself yet.
+        //       I've compromised by linking a file list ordered recent-first.
+        curseforgeDownloadLink = "https://www.curseforge.com/minecraft/mc-mods/$project.curseforge_slug/files?sortBy=dateCreated&sortOrder=desc";
+    }
+
+    println "CurseForge download: $curseforgeDownloadLink"
+    println "Modrinth download: $modrinthDownloadLink"
+    println "GitHub download: $githubDownloadLink"
+
+    if (project.hasProperty("discord")) {
+        sendDiscordWebhook()
+    }
+}
+
+
+// Support functions
+
+String getBranch() {
+    def branch = providers.environmentVariable("GITHUB_REF").getOrNull()
+    if (branch != null) {
+        return branch.substring(branch.lastIndexOf("/") + 1)
+    }
+
+    if (grgit == null) {
+        return "unknown"
+    }
+
+    branch = grgit.branch.current().name
+    return branch.substring(branch.lastIndexOf("/") + 1)
+}
+
+String getVersion() {
+    def version = "unknown"
+    if (project.hasProperty("currentTag")) {
+        return project.currentTag.replace("v", "")
+    }
+    def branchLines = "git branch --show-current".execute().in.readLines()
+    if (!branchLines.isEmpty()) {
+        version = branchLines.get(0)
+    }
+
+    def tagLines = "git describe --tags --exact-match --abbrev=0".execute().in.readLines()
+    def release = false
+    if (!tagLines.isEmpty()) {
+        def line = tagLines.get(0)
+        def regex = /v([0-9].[0-9].[0-9])/
+        if (line.matches(regex)) {
+            version = (line =~ regex)[0][1] // gets 1st match group of 1st match
+            release = true
+        }
+    }
+    if (!release) {
+        def lastTag = "git describe --tags --abbrev=0".execute().in.readLines()
+        def lastCommit = "git rev-parse --short HEAD".execute().in.readLines()
+        if (!lastTag.isEmpty() && !lastCommit.isEmpty()) {
+            version = lastTag.get(0) + "+" + version + "." + lastCommit.get(0)
+        }
+    }
+    return version
+}
+
+task generateChangelog {
+    def changes = StringBuilder.newInstance()
+    if (!project.hasProperty("lastTag") || !project.hasProperty("currentTag")) {
+        println "Missing lastTag or currentTag parameters, aborting changelog creation"
+        return;
+    }
+    def lastTag = project.getProperty("lastTag")
+    def currentTag = project.getProperty("currentTag")
+    def commits = "git log --max-count=$project.changelog_max_commit_search --pretty=format:\"%b\" $lastTag..$currentTag".execute()
+    println "Last version: $lastTag"
+    println "Current version: $currentTag"
+
+    if (currentTag.contains("-alpha")) {
+        releaseType = "alpha"
+        curseReleaseType = "alpha"
+        stabilitySuffix = " (Alpha)"
+    } else if (currentTag.contains("-beta")) {
+        releaseType = "beta"
+        curseReleaseType = "beta"
+        stabilitySuffix = " (Beta)"
+    } else if (currentTag.contains("-pre")) {
+        releaseType = "pre"
+        curseReleaseType = "beta"
+        stabilitySuffix = " (Pre-Release)"
+    } else if (currentTag.contains("-rc")) {
+        releaseType = "rc"
+        curseReleaseType = "beta"
+        stabilitySuffix = " (Release Candidate)"
+    } else if (!currentTag.contains("-")) {
+        releaseType = "stable"
+    }
+    println "Release type: $releaseType"
+
+    commits.in.eachLine { line -> // Loops over the lines the git log command returns
+        def processedLine = line.toString()
+        if (processedLine.startsWith("\"")) {
+            processedLine = processedLine.substring(1)
+        }
+        if (processedLine.endsWith("\"")) {
+            processedLine = processedLine.substring(0, processedLine.length() - 1)
+        }
+        println "Reading line: $processedLine"
+
+        if (processedLine.startsWith("- ")) {
+            println "Adding changelog line:"
+            println "  $processedLine"
+            if (changes.length() == 0) {
+                changes << processedLine
+            } else {
+                changes << "\n$processedLine"
+            }
+        }
+    }
+    commits.err.eachLine { line -> println line }
+    commits.waitFor()
+    println "Changelog:"
+    releaseChangelog = changes.toString()
+    if (releaseChangelog.isEmpty()) {
+        releaseChangelog = "No Changelog Available"
+    }
+    println releaseChangelog
+}
+
+
+// Discord functionality
+
+// Truncates changelogs for the Discord Webhook
+ext.createDiscordChangelog = { fullChangelogUrl ->
+    def webhookChangelog = StringBuilder.newInstance()
+    def changelogLines = releaseChangelog.split("\n")
+    def maxLines = Integer.decode(project.discord_webhook_changelog_line_limit)
+    if (changelogLines.length <= maxLines) {
+        return releaseChangelog
+    } else {
+        def lines = 0
+        changelogLines.find { line ->
+            if (webhookChangelog.length() == 0) {
+                webhookChangelog << line
+            } else {
+                webhookChangelog << "\n$line"
+            }
+            lines++
+            if (lines >= maxLines) {
+                webhookChangelog << "\n(+ " + (changelogLines.length - lines) + " more) See [Full Changelog]($fullChangelogUrl)"
+                return true;
+            }
+        }
+    }
+    return webhookChangelog.toString()
+}
+
+void sendDiscordWebhook() {
+    // Send if we have links for all the things we should.
+    if (!project.hasProperty("dryRun") &&
+            !providers.environmentVariable("DISCORD_ANNOUNCEMENT_WEBHOOK").isPresent() ||
+            (project.hasProperty('github') && githubDownloadLink == null) ||
+            (project.hasProperty("modrinth") && modrinthDownloadLink == null) ||
+            (project.hasProperty("curseforge") && curseforgeDownloadLink == null)) {
+        println "Missing webhook env or at least one deployment failed; aborting Discord..."
+    } else {
+        println "Preparing webhook"
+        def release_url = modrinthDownloadLink
+        def discordChangelog = createDiscordChangelog(release_url)
+        def downloads = ""
+
+        if (modrinthDownloadLink != null) {
+            downloads += "[$modrinth_emote Modrinth]($modrinthDownloadLink)\n"
+        }
+        if (curseforgeDownloadLink != null) {
+            downloads += "[$curseforge_emote CurseForge]($curseforgeDownloadLink)\n"
+        }
+        if (githubDownloadLink != null) {
+            downloads += "[$github_emote GitHub]($githubDownloadLink)\n"
+        }
+
+        // TODO: hot mess info dump
+        if (project.hasProperty("dryRun")) {
+            println "" + project.project_name + stabilitySuffix + " -> " + project.project_url
+            println "$project.project_name v$version for $project.minecraft_version Released"
+            println "Release: " + release_url
+            println "Changes:\n" + discordChangelog
+            println "Downloads:\n" + downloads
+            println "A $project.loader_name Mod"
+            return
+        }
+
+        def result = DiscordBuilder.createForm {
+            if (project.use_project_username.toBoolean()) {
+                avatar_url = project.project_logo
+                username = project.project_name
+            }
+            embed {
+                color = Integer.decode(project.project_color)
+                author {
+                    name = project.project_name + stabilitySuffix
+                    url = project.project_url
+                }
+                thumbnail { url = project.project_logo }
+                title = "$project.project_name v$version for $project.minecraft_version Released"
+                url = release_url
+                field {
+                    name = "Changes:"
+                    value = discordChangelog
+                }
+                field {
+                    name = "Downloads:"
+                    value = downloads
+                }
+                footer {
+                    text = "A $project.loader_name Mod"
+                    icon_url = project.loader_icon
+                }
+            }
+        }.send(providers.environmentVariable("DISCORD_ANNOUNCEMENT_WEBHOOK").get())
+
+        println "Discord Webhook Response: " + result.responseCode
+    }
+}
