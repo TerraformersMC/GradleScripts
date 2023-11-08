@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "me.modmuss50:mod-publish-plugin:0.3.6"
+        classpath "me.modmuss50:mod-publish-plugin:0.4.2"
         classpath "net.dumbcode.gradlehook:GradleHook:2.0.2"
         classpath "org.kohsuke:github-api:1.316"
         classpath "org.ajoberstar.grgit:grgit-gradle:4.1.0"
