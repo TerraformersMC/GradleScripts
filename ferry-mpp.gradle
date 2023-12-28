@@ -50,8 +50,8 @@ publishMods {
     }
 
     // The display name/release title, this defaults to the Gradle project name + version
-    if (project.hasProperty("displayName")) {
-        displayName = project.getProperty("displayName")
+    if (project.hasProperty("ext.releaseTitle")) {
+        displayName = project.getProperty("ext.releaseTitle")
     }
 
     // A ConfigurableFileCollection of addional files that are uploaded alongside the main file
