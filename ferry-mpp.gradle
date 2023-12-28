@@ -50,7 +50,9 @@ publishMods {
     }
 
     // The display name/release title, this defaults to the Gradle project name + version
-    //displayName = project.project_name
+    if (project.hasProperty("displayName")) {
+        displayName = project.getProperty("displayName")
+    }
 
     // A ConfigurableFileCollection of addional files that are uploaded alongside the main file
     //additionalFiles.from(jar.archiveFile)
@@ -62,7 +64,8 @@ publishMods {
     dryRun = project.hasProperty("dryRun")
 
     // Set the brand color for all targets to the project's brand color.
-    brandColor = Integer.decode(project.project_color)
+    // ... what happened to this property? ...
+    //brandColor = Integer.decode(project.project_color)
 
     if (project.hasProperty("github") && providers.environmentVariable("GITHUB_REPOSITORY").isPresent()) {
         github {
