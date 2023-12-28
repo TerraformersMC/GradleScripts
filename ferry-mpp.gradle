@@ -50,7 +50,7 @@ publishMods {
     }
 
     // The display name/release title, this defaults to the Gradle project name + version
-    displayName = project.project_name
+    //displayName = project.project_name
 
     // A ConfigurableFileCollection of addional files that are uploaded alongside the main file
     //additionalFiles.from(jar.archiveFile)
