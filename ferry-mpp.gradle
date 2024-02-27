@@ -281,7 +281,7 @@ String getVersion() {
         def lastTag = "git describe --tags --abbrev=0".execute().in.readLines()
         def lastCommit = "git rev-parse --short HEAD".execute().in.readLines()
         if (!lastTag.isEmpty() && !lastCommit.isEmpty()) {
-            version = lastTag.get(0) + "+" + version + "." + lastCommit.get(0)
+            version = lastTag.get(0).replace("v", "") + "+" + version + "." + lastCommit.get(0)
         }
     }
     return version
