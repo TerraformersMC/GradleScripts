@@ -117,7 +117,7 @@ curseforge {
         }
         changelog = releaseChangelog
         mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
-        mainArtifact.displayName = "$project.project_name v$version for $project.minecraft_version"
+        mainArtifact.displayName = "v$version for $project.minecraft_version"
         if (!project.curseforge_required_dependencies.isEmpty() || !project.curseforge_optional_dependencies.isEmpty()) {
             relations {
                 if (!project.curseforge_required_dependencies.isEmpty()) {
@@ -159,7 +159,7 @@ task github {
         def repository = github.getRepository(System.getenv().GITHUB_REPOSITORY)
 
         def releaseBuilder = new org.kohsuke.github.GHReleaseBuilder(repository, project.getProperty("currentTag"))
-        releaseBuilder.name("$project.project_name v$version for $project.minecraft_version")
+        releaseBuilder.name("v$version for $project.minecraft_version")
         releaseBuilder.body(releaseChangelog)
         releaseBuilder.commitish(getBranch())
         if (releaseType != "stable") {
@@ -259,7 +259,7 @@ import com.modrinth.minotaur.dependencies.ModDependency
 
 modrinth {
     projectId = project.modrinth_id
-    versionName = "$project.project_name v$version for $project.minecraft_version"
+    versionName = "v$version for $project.minecraft_version"
     uploadFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
     changelog = releaseChangelog
     versionType = curseReleaseType
