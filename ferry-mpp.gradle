@@ -42,13 +42,7 @@ publishMods {
 
     // Specify the release type
     // This gets reconfigured later by the generateChangelog task.
-    type = switch ("${project.default_release_type}") {
-        case "stable" -> STABLE
-        case "beta" -> BETA
-        case "pre" -> BETA
-        case "rc" -> BETA
-        default -> ALPHA
-    }
+    type = ALPHA
 
     // The display name/release title, this defaults to the Gradle project name + version
     if (project.hasProperty("releaseTitle")) {
