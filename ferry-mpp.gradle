@@ -20,6 +20,9 @@ apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
 def curseReleaseType = "release"
 def stabilitySuffix = ""
+def typeALPHA
+def typeBETA
+def typeSTABLE
 def curseforgeDownloadLink = null
 def modrinthDownloadLink = null
 def githubDownloadLink = null
@@ -218,6 +221,10 @@ publishMods {
             }
         }
     }
+
+    typeALPHA = ALPHA
+    typeBETA = BETA
+    typeSTABLE = STABLE
 }
 
 /* Disabled for now so I can see how the MPP announcement looks
@@ -325,11 +332,11 @@ task generateChangelog {
         publishMods.changelog = releaseChangelog
 
         if (releaseType == "stable") {
-            publishMods.type = publishMods.STABLE
+            publishMods.type = typeSTABLE
         } else if (releaseType == "beta" || releaseType == "pre" || releaseType == "rc") {
-            publishMods.type = publishMods.BETA
+            publishMods.type = typeBETA
         } else {
-            publishMods.type = publishMods.ALPHA
+            publishMods.type = typeALPHA
         }
     }
 }
