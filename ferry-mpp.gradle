@@ -325,11 +325,11 @@ task generateChangelog {
         publishMods.changelog = releaseChangelog
 
         if (releaseType == "stable") {
-            publishMods.type = ReleaseType.STABLE
+            publishMods.type = publishMods.STABLE
         } else if (releaseType == "beta" || releaseType == "pre" || releaseType == "rc") {
-            publishMods.type = ReleaseType.BETA
+            publishMods.type = publishMods.BETA
         } else {
-            publishMods.type = ReleaseType.ALPHA
+            publishMods.type = publishMods.ALPHA
         }
     }
 }
