@@ -19,6 +19,7 @@ apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
 def curseReleaseType = "release"
+def platformMap = getPlatforms()
 def stabilitySuffix = ""
 def typeALPHA
 def typeBETA
@@ -142,15 +143,15 @@ publishMods {
             repository = providers.environmentVariable("GITHUB_REPOSITORY").get()
 
             commitish = getBranch()
-        }
 
-        getPlatforms().each { platform, archive ->
-            github.additionalFiles.from(archive)
+            platformMap.each { platform, archive ->
+                additionalFiles.from(archive)
+            }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        getPlatforms().each { platform, archive ->
+        platformMap.each { platform, archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
@@ -167,7 +168,7 @@ publishMods {
     }
 
     if (project.hasProperty("curseforge")) {
-        getPlatforms().each { platform, archive ->
+        platformMap.each { platform, archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
