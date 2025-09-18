@@ -143,14 +143,14 @@ publishMods {
 
             commitish = getBranch()
 
-            getPlatforms().each({ def platform, archive ->
+            getPlatforms().each { platform, archive ->
                 additionalFiles.from(archive)
-            })
+            }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        getPlatforms().each({ def platform, archive ->
+        getPlatforms().each { platform, archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
@@ -163,11 +163,11 @@ publishMods {
                     modLoaders.add("quilt")
                 }
             }
-        })
+        }
     }
 
     if (project.hasProperty("curseforge")) {
-        getPlatforms().each({ def platform, archive ->
+        getPlatforms().each { platform, archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
@@ -180,7 +180,7 @@ publishMods {
                     modLoaders.add("quilt")
                 }
             }
-        })
+        }
     }
 
     if (project.hasProperty("discord")) {
@@ -225,7 +225,7 @@ Map getPlatforms() {
     def plats = [:]
 
     if (project.hasProperty("single_platform")) {
-        plats[single_platform] = project.remapJar.archiveFile
+        plats[project.findProperty("single_platform")] = project.remapJar.archiveFile
     } else {
         splitProperty("enabled_platforms").each { def platform ->
             plats[platform] = project(":${platform}").remapJar.archiveFile
