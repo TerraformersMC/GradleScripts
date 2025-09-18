@@ -143,14 +143,14 @@ publishMods {
 
             commitish = getBranch()
 
-            getPlatforms().each { platform, archive ->
+            getPlatforms().each { String platform, File archive ->
                 additionalFiles.from(archive)
             }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        getPlatforms().each { platform, archive ->
+        getPlatforms().each { String platform, File archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
@@ -167,7 +167,7 @@ publishMods {
     }
 
     if (project.hasProperty("curseforge")) {
-        getPlatforms().each { platform, archive ->
+        getPlatforms().each { String platform, File archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
