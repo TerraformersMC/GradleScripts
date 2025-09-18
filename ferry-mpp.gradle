@@ -143,26 +143,20 @@ publishMods {
 
             commitish = getBranch()
 
-            // file is unfortunately mandatory
-            // TODO: https://github.com/modmuss50/mod-publish-plugin/issues/29
-            splitProperty("enabled_platforms").each { def platform ->
-                if (!file.isPresent()) {
-                    file.set(project(":${platform}").remapJar.archiveFile)
-                } else {
-                    additionalFiles.from(project(":${platform}").remapJar.archiveFile)
-                }
+            getPlatforms().each { def platform, archive ->
+                additionalFiles.from(archive)
             }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        splitProperty("enabled_platforms").each { def platform ->
+        getPlatforms().each { def platform, archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
                 announcementTitle = "${project.modrinth_emote} Modrinth - " + platform.capitalize()
                 displayName = getReleaseTitle(platform.capitalize())
-                file = project(":${platform}").remapJar.archiveFile
+                file = archive
                 modLoaders.add(platform)
 
                 if (platform == "fabric") {
@@ -173,13 +167,13 @@ publishMods {
     }
 
     if (project.hasProperty("curseforge")) {
-        splitProperty("enabled_platforms").each { def platform ->
+        getPlatforms().each { def platform, archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
                 announcementTitle = "${project.curseforge_emote} CurseForge - " + platform.capitalize()
                 displayName = getReleaseTitle(platform.capitalize())
-                file = project(":${platform}").remapJar.archiveFile
+                file = archive
                 modLoaders.add(platform)
 
                 if (platform == "fabric") {
@@ -225,6 +219,20 @@ publishMods {
     typeALPHA = ALPHA
     typeBETA = BETA
     typeSTABLE = STABLE
+}
+
+Map getPlatforms() {
+    def plats = [:]
+
+    if (project.hasProperty("single_platform")) {
+        plats[single_platform] = project.remapJar.archiveFile
+    } else {
+        splitProperty("enabled_platforms").each { def platform ->
+            plats[platform] = project(":${platform}").remapJar.archiveFile
+        }
+    }
+
+    return plats as Map
 }
 
 
