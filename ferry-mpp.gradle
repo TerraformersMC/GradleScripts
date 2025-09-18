@@ -142,10 +142,10 @@ publishMods {
             repository = providers.environmentVariable("GITHUB_REPOSITORY").get()
 
             commitish = getBranch()
+        }
 
-            getPlatforms().each { platform, archive ->
-                additionalFiles.from(archive)
-            }
+        getPlatforms().each { platform, archive ->
+            github.additionalFiles.from(archive)
         }
     }
 
