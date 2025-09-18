@@ -72,7 +72,7 @@ publishMods {
             accessToken = providers.environmentVariable("MODRINTH_TOKEN").get()
         } else {
             accessToken = "undefined"
-            dryRun = true
+            //dryRun = true
         }
 
         projectId = project.modrinth_id
@@ -103,7 +103,7 @@ publishMods {
             accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").get()
         } else {
             accessToken = "undefined"
-            dryRun = true
+            //dryRun = true
         }
 
         projectId = project.curseforge_id
@@ -136,7 +136,7 @@ publishMods {
                 accessToken = providers.environmentVariable("GITHUB_TOKEN").get()
             } else {
                 accessToken = "undefined"
-                dryRun = true
+                //dryRun = true
             }
 
             repository = providers.environmentVariable("GITHUB_REPOSITORY").get()
@@ -186,7 +186,7 @@ publishMods {
     if (project.hasProperty("discord")) {
         discord {
             if (!providers.environmentVariable("DISCORD_ANNOUNCEMENT_WEBHOOK").isPresent()) {
-                dryRun = true
+                //dryRun = true
                 dryRunWebhookUrl = providers.environmentVariable("DISCORD_ANNOUNCEMENT_WEBHOOK_DRY_RUN")
                 webhookUrl = "undefined"
             } else {
