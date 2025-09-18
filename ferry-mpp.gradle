@@ -143,14 +143,14 @@ publishMods {
 
             commitish = getBranch()
 
-            getPlatforms().each { def platform, archive ->
+            getPlatforms().each({ def platform, archive ->
                 additionalFiles.from(archive)
-            }
+            })
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        getPlatforms().each { def platform, archive ->
+        getPlatforms().each({ def platform, archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
@@ -163,11 +163,11 @@ publishMods {
                     modLoaders.add("quilt")
                 }
             }
-        }
+        })
     }
 
     if (project.hasProperty("curseforge")) {
-        getPlatforms().each { def platform, archive ->
+        getPlatforms().each({ def platform, archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
@@ -180,7 +180,7 @@ publishMods {
                     modLoaders.add("quilt")
                 }
             }
-        }
+        })
     }
 
     if (project.hasProperty("discord")) {
