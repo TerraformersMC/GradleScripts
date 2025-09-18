@@ -143,14 +143,16 @@ publishMods {
 
             commitish = getBranch()
 
-            getPlatforms().each { String platform, File archive ->
-                additionalFiles.from(archive)
+            doLast {
+                getPlatforms().each { platform, archive ->
+                    additionalFiles.from(archive)
+                }
             }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        getPlatforms().each { String platform, File archive ->
+        getPlatforms().each { platform, archive ->
             modrinth("${platform}Modrinth") {
                 from options_modrinth
 
@@ -167,7 +169,7 @@ publishMods {
     }
 
     if (project.hasProperty("curseforge")) {
-        getPlatforms().each { String platform, File archive ->
+        getPlatforms().each { platform, archive ->
             curseforge("${platform}Curseforge") {
                 from options_curseforge
 
@@ -221,8 +223,8 @@ publishMods {
     typeSTABLE = STABLE
 }
 
-Map getPlatforms() {
-    def plats = [:]
+Map<String, File> getPlatforms() {
+    Map<String, File> plats = [:] as Map<String, File>
 
     if (project.hasProperty("single_platform")) {
         plats[project.findProperty("single_platform")] = project.remapJar.archiveFile
@@ -232,7 +234,7 @@ Map getPlatforms() {
         }
     }
 
-    return plats as Map
+    return plats
 }
 
 
