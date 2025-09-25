@@ -19,7 +19,7 @@ apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
 def curseReleaseType = "release"
-def platformMap = getPlatforms()
+def publications = getPublications()
 def stabilitySuffix = ""
 def typeALPHA
 def typeBETA
@@ -62,7 +62,9 @@ publishMods {
     //maxRetries = 5
 
     // When dry run is enabled the release assets will be saved to the build directory for testing.
-    dryRun = project.hasProperty("dryRun")
+    if (project.hasProperty("dryRun")) {
+        dryRun = true
+    }
 
     // Set the brand color for all targets to the project's brand color.
     // ... what happened to this property? ...
@@ -73,7 +75,9 @@ publishMods {
             accessToken = providers.environmentVariable("MODRINTH_TOKEN").get()
         } else {
             accessToken = "undefined"
-            //dryRun = true
+            if (!dryRun) {
+                dryRun = true
+            }
         }
 
         projectId = project.modrinth_id
@@ -104,7 +108,9 @@ publishMods {
             accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").get()
         } else {
             accessToken = "undefined"
-            //dryRun = true
+            if (!dryRun) {
+                dryRun = true
+            }
         }
 
         projectId = project.curseforge_id
@@ -137,30 +143,33 @@ publishMods {
                 accessToken = providers.environmentVariable("GITHUB_TOKEN").get()
             } else {
                 accessToken = "undefined"
-                //dryRun = true
+                if (!dryRun) {
+                    dryRun = true
+                }
             }
 
+            announcementTitle = (project.github_emote != null ? project.github_emote + " " : "") + "Download from GitHub"
             repository = providers.environmentVariable("GITHUB_REPOSITORY").get()
 
             commitish = getBranch()
 
-            platformMap.each { platform, archive ->
-                additionalFiles.from(archive)
+            publications.each { Publication publication ->
+                additionalFiles.from(publication.getArchive())
             }
         }
     }
 
     if (project.hasProperty("modrinth")) {
-        platformMap.each { platform, archive ->
-            modrinth("${platform}Modrinth") {
+        publications.each { Publication publication ->
+            modrinth("${publication.getPlatform()}Modrinth") {
                 from options_modrinth
 
-                announcementTitle = "${project.modrinth_emote} Modrinth - " + platform.capitalize()
-                displayName = getReleaseTitle(platform.capitalize())
-                file = archive
-                modLoaders.add(platform)
+                announcementTitle = publication.getAnnouncementTitle("Modrinth", project.modrinth_emote)
+                displayName = publication.getDisplayName()
+                file = publication.getArchive()
+                modLoaders.add(publication.getPlatform())
 
-                if (platform == "fabric") {
+                if (publication.getPlatform() == "fabric") {
                     modLoaders.add("quilt")
                 }
             }
@@ -168,16 +177,16 @@ publishMods {
     }
 
     if (project.hasProperty("curseforge")) {
-        platformMap.each { platform, archive ->
-            curseforge("${platform}Curseforge") {
+        publications.each { Publication publication ->
+            curseforge("${publication.getPlatform()}Curseforge") {
                 from options_curseforge
 
-                announcementTitle = "${project.curseforge_emote} CurseForge - " + platform.capitalize()
-                displayName = getReleaseTitle(platform.capitalize())
-                file = archive
-                modLoaders.add(platform)
+                announcementTitle = publication.getAnnouncementTitle("CurseForge", project.curseforge_emote)
+                displayName = publication.getDisplayName()
+                file = publication.getArchive()
+                modLoaders.add(publication.getPlatform())
 
-                if (platform == "fabric") {
+                if (publication.getPlatform() == "fabric") {
                     modLoaders.add("quilt")
                 }
             }
@@ -222,18 +231,42 @@ publishMods {
     typeSTABLE = STABLE
 }
 
-Map getPlatforms() {
-    def plats = [:]
+class Publication {
+    private String platform
+    private boolean single
 
-    if (project.hasProperty("single_platform")) {
-        plats[(project.getProperty("single_platform"))] = project.remapJar.archiveFile
-    } else {
-        splitProperty("enabled_platforms").each { def platform ->
-            plats[(platform)] = project(":${platform}").remapJar.archiveFile
-        }
+    Publication(String platform) {
+        assert platform != null && platform.length() > 0
+        this.platform = platform
+        this.single = (project.hasProperty("single_platform") && platform == project.getProperty("single_platform"))
     }
 
-    return plats as Map
+    String getPlatform() {
+        return platform
+    }
+
+    RegularFile getArchive() {
+        return single ? project.remapJar.archiveFile : project(":${platform}").remapJar.archiveFile
+    }
+
+    String getAnnouncementTitle(String name, String emote) {
+        assert name != null && name.length() > 0
+        return ((emote != null ? emote + " " : "") + name + (single ? "" : " - " + platform.capitalize()))
+    }
+
+    String getDisplayName() {
+        return single ? getReleaseTitle(null) : getReleaseTitle(platform.capitalize())
+    }
+}
+
+ArrayList<Publication> getPublications() {
+    if (project.hasProperty("single_platform")) {
+        assert (project.getProperty("single_platform") as String ?: '').length() > 0
+        return [ new Publication(project.getProperty("single_platform")) ]
+    } else {
+        assert (project.getProperty("enabled_platforms") as String ?: '').length() > 0
+        return splitProperty("enabled_platforms").collect { Publication::new }
+    }
 }
 
 
