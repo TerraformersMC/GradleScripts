@@ -19,7 +19,7 @@ apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
 def curseReleaseType = "release"
-def publications = getPublications()
+def publications = getPublications(rootProject)
 def stabilitySuffix = ""
 def typeALPHA
 def typeBETA
@@ -233,11 +233,13 @@ publishMods {
 
 class Publication {
     private String platform
+    private Project project
     private boolean single
 
-    Publication(String platform) {
+    Publication(Project project, String platform) {
         assert platform != null && platform.length() > 0
         this.platform = platform
+        this.project = project
         this.single = (project.hasProperty("single_platform") && platform == project.getProperty("single_platform"))
     }
 
@@ -259,13 +261,13 @@ class Publication {
     }
 }
 
-ArrayList<Publication> getPublications() {
+ArrayList<Publication> getPublications(Project project) {
     if (project.hasProperty("single_platform")) {
         assert (project.getProperty("single_platform") as String ?: '').length() > 0
-        return [ new Publication(project.getProperty("single_platform")) ]
+        return [ new Publication(project, project.getProperty("single_platform") as String) ]
     } else {
         assert (project.getProperty("enabled_platforms") as String ?: '').length() > 0
-        return splitProperty("enabled_platforms").collect { Publication::new }
+        return splitProperty("enabled_platforms").collect { platform -> new Publication(project, platform) }
     }
 }
 
