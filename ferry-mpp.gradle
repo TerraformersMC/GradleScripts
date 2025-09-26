@@ -49,10 +49,11 @@ publishMods {
     type = ALPHA
 
     // The display name/release title, this defaults to the Gradle project name + version
+    // This will typically be overridden for each publication later on...
     if (project.hasProperty("releaseTitle")) {
         displayName = project.getProperty("releaseTitle")
     } else {
-        displayName = getReleaseTitle(null)
+        displayName = "${project.project_name} v${project.version} for ${project.minecraft_version}"
     }
 
     // A ConfigurableFileCollection of additional files that are uploaded alongside the main file
@@ -257,7 +258,9 @@ class Publication {
     }
 
     String getDisplayName() {
-        return single ? getReleaseTitle(null as String) : getReleaseTitle(platform.capitalize())
+        return single ?
+                "${project.project_name} v${project.version} for ${project.minecraft_version}" as String :
+                "${project.project_name} ${platform.capitalize()} v${project.version} for ${project.minecraft_version}" as String
     }
 }
 
@@ -382,14 +385,6 @@ String getReleaseChangelog() {
     }
 
     return changelogFile.text
-}
-
-String getReleaseTitle(String platform) {
-    if (platform != null && platform.length() > 0) {
-        return "${project.project_name} ${platform} v${project.version} for ${project.minecraft_version}" as String
-    } else {
-        return "${project.project_name} v${project.version} for ${project.minecraft_version}" as String
-    }
 }
 
 String getVersion() {
