@@ -248,7 +248,7 @@ class Publication {
     }
 
     RegularFile getArchive() {
-        return single ? project.remapJar.archiveFile : project(":${platform}").remapJar.archiveFile
+        return single ? project.remapJar.archiveFile.get() : project.project(":${platform}").remapJar.archiveFile.get()
     }
 
     String getAnnouncementTitle(String name, String emote) {
