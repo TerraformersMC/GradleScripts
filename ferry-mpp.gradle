@@ -257,7 +257,7 @@ class Publication {
     }
 
     String getDisplayName() {
-        return single ? getReleaseTitle(null) : getReleaseTitle(platform.capitalize())
+        return single ? getReleaseTitle(null as String) : getReleaseTitle(platform.capitalize())
     }
 }
 
@@ -385,11 +385,11 @@ String getReleaseChangelog() {
 }
 
 String getReleaseTitle(String platform) {
-    if (platform == null) {
-        return "${project.project_name} v${project.version} for ${project.minecraft_version}"
+    if (platform != null && platform.length() > 0) {
+        return "${project.project_name} ${platform} v${project.version} for ${project.minecraft_version}" as String
+    } else {
+        return "${project.project_name} v${project.version} for ${project.minecraft_version}" as String
     }
-
-    return "${project.project_name} ${platform} v${project.version} for ${project.minecraft_version}"
 }
 
 String getVersion() {
