@@ -24,9 +24,6 @@ def stabilitySuffix = ""
 def typeALPHA
 def typeBETA
 def typeSTABLE
-def curseforgeDownloadLink = null
-def modrinthDownloadLink = null
-def githubDownloadLink = null
 
 rootProject.setVersion(getVersion())
 
@@ -248,8 +245,8 @@ class Publication {
         return platform
     }
 
-    RegularFile getArchive() {
-        return single ? project.remapJar.archiveFile.get() : project.project(":${platform}").remapJar.archiveFile.get()
+    RegularFileProperty getArchive() {
+        return single ? project.remapJar.archiveFile : project.project(":${platform}").remapJar.archiveFile
     }
 
     String getAnnouncementTitle(String name, String emote) {
@@ -277,11 +274,11 @@ ArrayList<Publication> getPublications(Project project) {
 
 // Changelog generation and persistence
 
-task generateChangelog {
-    def changes = StringBuilder.newInstance()
+tasks.register('generateChangelog') {
+    def changes = StringBuilder.getDeclaredConstructor().newInstance()
     if (!project.hasProperty("lastTag") || !project.hasProperty("currentTag")) {
         println "Missing lastTag or currentTag parameters, aborting changelog creation"
-        return;
+        return
     }
     def lastTag = project.getProperty("lastTag")
     def currentTag = project.getProperty("currentTag")
@@ -311,7 +308,7 @@ task generateChangelog {
     }
     println "Release type: ${releaseType}"
 
-    commits.in.eachLine { line -> // Loops over the lines the git log command returns
+    commits.in.readLines().each { line -> // Loops over the lines the git log command returns
         def processedLine = line.toString()
         if (processedLine.startsWith("\"")) {
             processedLine = processedLine.substring(1)
@@ -379,14 +376,6 @@ String getBranch() {
     return branch.substring(branch.lastIndexOf("/") + 1)
 }
 
-String getReleaseChangelog() {
-    if (!changelogFile.canRead()) {
-        return "No Changelog Available"
-    }
-
-    return changelogFile.text
-}
-
 String getVersion() {
     def version = "unknown"
     if (project.hasProperty("currentTag")) {
@@ -400,10 +389,9 @@ String getVersion() {
     def tagLines = "git describe --tags --exact-match --abbrev=0".execute().in.readLines()
     def release = false
     if (!tagLines.isEmpty()) {
-        def line = tagLines.get(0)
-        def regex = /v([0-9].[0-9].[0-9])/
-        if (line.matches(regex)) {
-            version = (line =~ regex)[0][1] // gets 1st match group of 1st match
+        def matcher = tagLines.get(0) =~ /v([0-9].[0-9].[0-9])/
+        if (matcher.find()) {
+            version = matcher.group(1) // gets 1st match group of 1st match
             release = true
         }
     }
@@ -421,7 +409,7 @@ String[] splitProperty(String property) {
     String value = project.findProperty(property)
 
     if (value == null) {
-        return new String[0];
+        return new String[0]
     }
 
     return value.split(', *').findAll { !it.isBlank() }
