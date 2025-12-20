@@ -17,7 +17,7 @@ buildscript {
 	}
 }
 
-import net.fabricmc.loom.LoomGradlePlugin
+apply plugin: net.fabricmc.loom.LoomGradlePlugin
 
 sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
@@ -89,7 +89,7 @@ void setupRepositories(RepositoryHandler repositories) {
 }
 
 ext.mod = { String localOverrideKey, Object dep ->
-	File file = file("../.${localOverrideKey}-local");
+	File file = file("../.${localOverrideKey}-local")
 	if (file.exists()) {
 		dependencies.implementation(dep)
 	} else {
