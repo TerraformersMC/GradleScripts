@@ -13,11 +13,11 @@ buildscript {
 	}
 
 	dependencies {
-		classpath "net.fabricmc:fabric-loom:1.14-SNAPSHOT"
+		classpath 'net.fabricmc:fabric-loom:1.14-SNAPSHOT'
 	}
 }
 
-apply plugin: net.fabricmc.fabric-loom.LoomGradlePlugin
+apply plugin: 'net.fabricmc.fabric-loom.LoomGradlePlugin'
 
 archivesBaseName = project.archive_name
 group = project.maven_group
