@@ -19,7 +19,7 @@ buildscript {
 
 apply plugin: 'net.fabricmc.fabric-loom'
 
-archivesBaseName = project.archive_name
+base.archivesName = project.archive_name
 group = project.maven_group
 
 apply plugin: 'java'
