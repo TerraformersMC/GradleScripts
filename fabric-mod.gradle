@@ -80,17 +80,3 @@ void setupRepositories(RepositoryHandler repositories) {
 		}
 	}
 }
-
-ext.mod = { String localOverrideKey, Object dep ->
-	File file = file("../.${localOverrideKey}-local")
-	if (file.exists()) {
-		dependencies.implementation(dep)
-	} else {
-		dependencies.modImplementation(dep)
-	}
-}
-
-ext.includeMod = { String localOverrideKey, Object dep ->
-	mod(localOverrideKey, dep)
-	dependencies.include(dep)
-}
