@@ -59,7 +59,6 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifactId = project.base.archivesName
 			from components.java
 		}
 	}
