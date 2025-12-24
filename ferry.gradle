@@ -18,7 +18,7 @@ buildscript {
 }
 
 apply plugin: net.dumbcode.gradlehook.GradleWebhookPlugin
-apply plugin: de.maxhenkel.cursegradle
+apply plugin: de.maxhenkel.cursegradle.CurseGradlePlugin
 apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 apply plugin: com.modrinth.minotaur.Minotaur
 apply plugin: 'maven-publish'
