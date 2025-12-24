@@ -57,11 +57,9 @@ jar {
 }
 
 publishing {
-	inputs.property "archivesName", project.base.archivesName
-
 	publications {
 		mavenJava(MavenPublication) {
-			artifactId = inputs.properties.archivesName
+			artifactId = project.base.archivesName
 			from components.java
 		}
 	}
