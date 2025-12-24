@@ -119,7 +119,7 @@ curseforge {
             String gameVersion -> addGameVersion gameVersion
         }
         changelog = releaseChangelog
-        mainArtifact(file("${project.buildDir}/libs/${project.base.archivesName}-${version}.jar"))
+        mainArtifact(file("${project.buildDir}/libs/${project.base.archivesName.get()}-${version}.jar"))
         mainArtifact.displayName = "v$version for $project.minecraft_version"
         if (!project.curseforge_required_dependencies.isEmpty() || !project.curseforge_optional_dependencies.isEmpty()) {
             relations {
@@ -170,7 +170,7 @@ task github {
         }
 
         def ghRelease = releaseBuilder.create()
-        ghRelease.uploadAsset(file("${project.buildDir}/libs/${project.base.archivesName}-${version}.jar"), "application/java-archive");
+        ghRelease.uploadAsset(file("${project.buildDir}/libs/${project.base.archivesName.get()}-${version}.jar"), "application/java-archive");
         githubDownloadLink = ghRelease.getHtmlUrl()
         sendDiscordWebhook()
     }
@@ -266,7 +266,7 @@ modrinth {
     }
     projectId = project.modrinth_id
     versionName = "v$version for $project.minecraft_version"
-    uploadFile = file("${project.buildDir}/libs/${project.base.archivesName}-${version}.jar")
+    uploadFile = file("${project.buildDir}/libs/${project.base.archivesName.get()}-${version}.jar")
     changelog = releaseChangelog
     versionType = curseReleaseType
     project.modrinth_game_versions.split(", ").each {
