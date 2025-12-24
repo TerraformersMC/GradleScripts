@@ -57,9 +57,11 @@ jar {
 }
 
 publishing {
+	inputs.property "archivesName", project.base.archivesName
+
 	publications {
-		register("mavenJava", MavenPublication) {
-			artifactId = project.base.archivesName
+		mavenJava(MavenPublication) {
+			artifactId = inputs.properties.archivesName
 			from components.java
 		}
 	}
