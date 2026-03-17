@@ -32,7 +32,7 @@ rootProject.setVersion(getVersion())
 
 publishMods {
     // Set the main file to be uploaded
-    //file = remapJar.archiveFile
+    //file = jar.archiveFile
 
     // Markdown changelog
     // This gets reconfigured later by the generateChangelog task.
@@ -246,7 +246,9 @@ class Publication {
     }
 
     RegularFileProperty getArchive() {
-        return single ? project.remapJar.archiveFile : project.project(":${platform}").remapJar.archiveFile
+        return single
+                ? project.tasks.named('jar').get().archiveFile
+                : project.project(":${platform}").tasks.named('jar').get().archiveFile
     }
 
     String getAnnouncementTitle(String name, String emote) {
