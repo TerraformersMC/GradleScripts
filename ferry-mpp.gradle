@@ -247,8 +247,8 @@ class Publication {
 
     RegularFileProperty getArchive() {
         return single
-                ? project.tasks.named('jar').get().archiveFile
-                : project.project(":${platform}").tasks.named('jar').get().archiveFile
+                ? file("${project.layout.buildDirectory.get()}/libs/${project.base.archivesName.get()}-${version}.jar") as RegularFileProperty
+                : file("${project.project(":${platform}").layout.buildDirectory.get()}/libs/${project.project(":${platform}").base.archivesName.get()}-${version}.jar") as RegularFileProperty
     }
 
     String getAnnouncementTitle(String name, String emote) {
@@ -257,9 +257,9 @@ class Publication {
     }
 
     String getDisplayName() {
-        return single ?
-                "${project.project_name} v${project.version} for ${project.minecraft_version}" as String :
-                "${project.project_name} ${platform.capitalize()} v${project.version} for ${project.minecraft_version}" as String
+        return single
+                ? "${project.project_name} v${project.version} for ${project.minecraft_version}" as String
+                : "${project.project_name} ${platform.capitalize()} v${project.version} for ${project.minecraft_version}" as String
     }
 }
 
