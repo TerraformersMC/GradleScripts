@@ -239,7 +239,7 @@ class Publication {
         assert platform != null && platform.length() > 0
         this.platform = platform
         this.project = project
-        this.version = getVersion()
+        this.version = project.version
         this.single = (project.hasProperty("single_platform") && platform == project.getProperty("single_platform"))
     }
 
