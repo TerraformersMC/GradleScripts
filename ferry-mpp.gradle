@@ -232,14 +232,12 @@ publishMods {
 class Publication {
     private String platform
     private Project project
-    private String version
     private boolean single
 
     Publication(Project project, String platform) {
         assert platform != null && platform.length() > 0
         this.platform = platform
         this.project = project
-        this.version = project.version
         this.single = (project.hasProperty("single_platform") && platform == project.getProperty("single_platform"))
     }
 
@@ -249,8 +247,8 @@ class Publication {
 
     RegularFileProperty getArchive() {
         return single
-                ? project.tasks.named('jar', Jar).filter {!it.archiveClassifier.isPresent()}.get().archiveFile as RegularFileProperty
-                : project.project(":${platform}").tasks.named('jar', Jar).filter {!it.archiveClassifier.isPresent()}.get().archiveFile as RegularFileProperty
+                ? project.tasks.named('jar', Jar).get().archiveFile as RegularFileProperty
+                : project.project(":${platform}").tasks.named('jar', Jar).get().archiveFile as RegularFileProperty
     }
 
     String getAnnouncementTitle(String name, String emote) {
