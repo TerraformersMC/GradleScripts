@@ -249,8 +249,8 @@ class Publication {
 
     RegularFileProperty getArchive() {
         return single
-                ? project.tasks.named('jar', Jar).flatMap { it.archiveFile } as RegularFileProperty
-                : project.project(":${platform}").tasks.named('jar', Jar).flatMap { it.archiveFile } as RegularFileProperty
+                ? project.tasks.named('jar', Jar).filter {!it.archiveClassifier.isPresent()}.get().archiveFile as RegularFileProperty
+                : project.project(":${platform}").tasks.named('jar', Jar).filter {!it.archiveClassifier.isPresent()}.get().archiveFile as RegularFileProperty
     }
 
     String getAnnouncementTitle(String name, String emote) {
