@@ -247,8 +247,8 @@ class Publication {
 
     RegularFileProperty getArchive() {
         return single
-                ? file("${project.layout.buildDirectory.get()}/libs/${project.base.archivesName.get()}-${version}.jar") as RegularFileProperty
-                : file("${project.project(":${platform}").layout.buildDirectory.get()}/libs/${project.project(":${platform}").base.archivesName.get()}-${version}.jar") as RegularFileProperty
+                ? file("${project.layout.buildDirectory.get()}/libs/${project.base.archivesName.get()}-${rootProject.version}.jar") as RegularFileProperty
+                : file("${project.project(":${platform}").layout.buildDirectory.get()}/libs/${project.project(":${platform}").base.archivesName.get()}-${rootProject.version}.jar") as RegularFileProperty
     }
 
     String getAnnouncementTitle(String name, String emote) {
