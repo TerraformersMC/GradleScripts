@@ -18,7 +18,7 @@ apply plugin: net.dumbcode.gradlehook.GradleWebhookPlugin
 apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
-ext.jarTask ?= "jar"
+ext.jarTask = findProperty('jarTask') ?: 'jar'
 def curseReleaseType = "release"
 def publications = getPublications(rootProject)
 def stabilitySuffix = ""
