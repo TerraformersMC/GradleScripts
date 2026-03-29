@@ -18,6 +18,7 @@ apply plugin: net.dumbcode.gradlehook.GradleWebhookPlugin
 apply plugin: org.ajoberstar.grgit.gradle.GrgitPlugin
 
 ext.changelogFile = file(layout.buildDirectory.file("ferryReleaseChangelog.txt"))
+ext.jarTask = "jar"
 def curseReleaseType = "release"
 def publications = getPublications(rootProject)
 def stabilitySuffix = ""
@@ -230,12 +231,15 @@ publishMods {
 }
 
 class Publication {
+    private String jarTask
     private String platform
     private Project project
     private boolean single
 
     Publication(Project project, String platform) {
         assert platform != null && platform.length() > 0
+
+        this.jarTask = ext.jarTask
         this.platform = platform
         this.project = project
         this.single = (project.hasProperty("single_platform") && platform == project.getProperty("single_platform"))
@@ -247,8 +251,8 @@ class Publication {
 
     RegularFileProperty getArchive() {
         return single
-                ? project.tasks.named('jar', Jar).get().archiveFile as RegularFileProperty
-                : project.project(":${platform}").tasks.named('jar', Jar).get().archiveFile as RegularFileProperty
+                ? project.tasks.named(jarTask, Jar).get().archiveFile as RegularFileProperty
+                : project.project(":${platform}").tasks.named(jarTask, Jar).get().archiveFile as RegularFileProperty
     }
 
     String getAnnouncementTitle(String name, String emote) {
