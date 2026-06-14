@@ -117,7 +117,7 @@ curseforge {
         releaseType = curseReleaseType
         project.curseforge_game_versions.split(", ").each {
             String gameVersion ->
-                if (gameVersion ==~ /-/) {
+                if (gameVersion.contains("-")) {
                     // CurseForge cannot handle pre-production versions anymore...
                     println "CurseForge: Dropping non-prod Minecraft version: " + gameVersion
                 } else {
@@ -153,7 +153,7 @@ curseforge {
 tasks.named("curseforge") {
     onlyIf {
         project.findProperty('curseforge_game_versions') &&
-                !(project.curseforge_game_versions.split(", ").every { it ==~ /-/ })
+                !(project.curseforge_game_versions.split(", ").every { it.contains("-") })
     }
 }
 

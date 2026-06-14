@@ -118,7 +118,7 @@ publishMods {
 
         // A list of the versions the release supports
         splitProperty("curseforge_game_versions").each {
-            if (it ==~ /-/) {
+            if (it.contains("-")) {
                 // CurseForge cannot handle pre-production versions anymore...
                 println "CurseForge: Dropping non-prod Minecraft version: " + it
             } else {
@@ -180,7 +180,7 @@ publishMods {
         }
     }
 
-    if (project.hasProperty("curseforge") && curseforge.minecraftVersions.lenth() > 0) {
+    if (project.hasProperty("curseforge") && curseforge.minecraftVersions) {
         publications.each { Publication publication ->
             curseforge("${publication.getPlatform()}Curseforge") {
                 from options_curseforge
