@@ -141,6 +141,9 @@ curseforge {
                 }
             }
         }
+        afterEvaluate {
+            uploadTask.dependsOn(jar)
+        }
     }
     options {
         forgeGradleIntegration = false
@@ -310,9 +313,6 @@ modrinth {
                 embedded.project dep.trim()
             }
         }
-    }
-    project.afterEvaluate {
-        uploadTask.dependsOn(jar)
     }
 }
 
