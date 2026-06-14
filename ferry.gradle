@@ -107,10 +107,6 @@ processResources {
 }
 
 curseforge {
-    onlyIf {
-        project.findProperty('curseforge_game_versions') &&
-        !(project.curseforge_game_versions.split(", ").every { it ==~ /-/ })
-    }
     if (System.getenv().CURSEFORGE_TOKEN) {
         apiKey = System.getenv().CURSEFORGE_TOKEN
     } else {
@@ -148,6 +144,13 @@ curseforge {
     }
     options {
         forgeGradleIntegration = false
+    }
+}
+
+tasks.named("curseforge") {
+    onlyIf {
+        project.findProperty('curseforge_game_versions') &&
+                !(project.curseforge_game_versions.split(", ").every { it ==~ /-/ })
     }
 }
 
@@ -212,7 +215,11 @@ void sendDiscordWebhook() {
     println "CurseForge download: $curseforgeDownloadLink"
     println "Modrinth download: $modrinthDownloadLink"
     println "GitHub download: $githubDownloadLink"
-    if (curseforgeDownloadLink != null && modrinthDownloadLink != null && githubDownloadLink != null && System.getenv().DISCORD_ANNOUNCEMENT_WEBHOOK) {
+    if (modrinthDownloadLink != null && githubDownloadLink != null && System.getenv().DISCORD_ANNOUNCEMENT_WEBHOOK) {
+        if (curseforgeDownloadLink == null) {
+            // Whatever; I don't have time to care about CF.
+            curseforgeDownloadLink = modrinthDownloadLink
+        }
         println "Preparing webhook"
         def release_url = modrinthDownloadLink
         def discordChangelog = createDiscordChangelog(release_url)
