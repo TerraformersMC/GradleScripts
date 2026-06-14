@@ -145,6 +145,9 @@ curseforge {
     options {
         forgeGradleIntegration = false
     }
+    afterEvaluate {
+        uploadTask.dependsOn(jar)
+    }
 }
 
 tasks.named("curseforge") {
@@ -310,9 +313,6 @@ modrinth {
                 embedded.project dep.trim()
             }
         }
-    }
-    afterEvaluate {
-        uploadTask.dependsOn(jar)
     }
 }
 
