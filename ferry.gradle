@@ -107,6 +107,10 @@ processResources {
 }
 
 curseforge {
+    onlyIf {
+        project.findProperty('curseforge_game_versions') &&
+        !(project.curseforge_game_versions.split(", ").every { it ==~ /-/ })
+    }
     if (System.getenv().CURSEFORGE_TOKEN) {
         apiKey = System.getenv().CURSEFORGE_TOKEN
     } else {
@@ -116,7 +120,13 @@ curseforge {
         id = project.curseforge_id
         releaseType = curseReleaseType
         project.curseforge_game_versions.split(", ").each {
-            String gameVersion -> addGameVersion gameVersion
+            String gameVersion ->
+                if (gameVersion ==~ /-/) {
+                    // CurseForge cannot handle pre-production versions anymore...
+                    println "CurseForge: Dropping non-prod Minecraft version: " + gameVersion
+                } else {
+                    addGameVersion gameVersion
+                }
         }
         changelog = releaseChangelog
         mainArtifact(file("${project.buildDir}/libs/${project.base.archivesName.get()}-${version}.jar"))
@@ -134,9 +144,6 @@ curseforge {
                     }
                 }
             }
-        }
-        afterEvaluate {
-            uploadTask.dependsOn(jar)
         }
     }
     options {
@@ -296,6 +303,9 @@ modrinth {
                 embedded.project dep.trim()
             }
         }
+    }
+    afterEvaluate {
+        uploadTask.dependsOn(jar)
     }
 }
 
