@@ -180,7 +180,7 @@ publishMods {
         }
     }
 
-    if (project.hasProperty("curseforge") && options_curseforge.minecraftVersions) {
+    if (project.hasProperty("curseforge") && !(project.curseforge_game_versions.split(", ").every { it.contains("-") })) {
         publications.each { Publication publication ->
             curseforge("${publication.getPlatform()}Curseforge") {
                 from options_curseforge
