@@ -160,7 +160,9 @@ tasks.named("curseforge") {
 tasks.getByName("curseforge").doLast {
     def fileId = (tasks.getByName("curseforge$curseforge_id").property("mainArtifact"))['fileID']
     curseforgeDownloadLink = "https://www.curseforge.com/minecraft/mc-mods/$project.curseforge_slug/files/$fileId";
-    sendDiscordWebhook()
+    // CurseForge alone can't trigger Discord publish because we let it soft-fail...
+    // This means Discord announcements can be missing CF but I am just fine with that.
+    //sendDiscordWebhook()
 }
 
 task github {
