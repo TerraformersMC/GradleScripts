@@ -221,10 +221,6 @@ void sendDiscordWebhook() {
     println "Modrinth download: $modrinthDownloadLink"
     println "GitHub download: $githubDownloadLink"
     if (modrinthDownloadLink != null && githubDownloadLink != null && System.getenv().DISCORD_ANNOUNCEMENT_WEBHOOK) {
-        if (curseforgeDownloadLink == null) {
-            // Whatever; I don't have time to care about CF.
-            curseforgeDownloadLink = modrinthDownloadLink
-        }
         println "Preparing webhook"
         def release_url = modrinthDownloadLink
         def discordChangelog = createDiscordChangelog(release_url)
@@ -249,7 +245,7 @@ void sendDiscordWebhook() {
                 }
                 field {
                     name = "Downloads:"
-                    value = "[$modrinth_emote Modrinth]($modrinthDownloadLink)\n[$curseforge_emote CurseForge]($curseforgeDownloadLink)\n[$github_emote GitHub]($githubDownloadLink)"
+                    value = "[$modrinth_emote Modrinth]($modrinthDownloadLink)\n[$github_emote GitHub]($githubDownloadLink)"
                 }
                 footer {
                     text = "A $project.loader_name Mod"
