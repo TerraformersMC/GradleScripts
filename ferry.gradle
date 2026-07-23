@@ -119,8 +119,8 @@ curseforge {
             String gameVersion -> addGameVersion gameVersion
         }
         // TODO: Set this junk to the right values
-        addEnvironment client
-        addEnvironment server
+        addGameVersion Client
+        addGameVersion Server
         changelog = releaseChangelog
         mainArtifact(file("${project.buildDir}/libs/${project.base.archivesName.get()}-${version}.jar"))
         mainArtifact.displayName = "v$version for $project.minecraft_version"
