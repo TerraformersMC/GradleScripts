@@ -126,6 +126,11 @@ publishMods {
             }
         }
 
+        // TODO: The "I don't care about CurseForge (tm)" edition
+        // These will be "client" and "server" in MPP 2+
+        clientRequired = true
+        serverRequired = true
+
         // Dependencies
         splitProperty("curseforge_required_dependencies").each {
             requires(it)
