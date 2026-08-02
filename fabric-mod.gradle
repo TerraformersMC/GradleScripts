@@ -10,9 +10,6 @@ buildscript {
 			name = 'TerraformersMC'
 			url = 'https://maven.terraformersmc.com/'
 		}
-		maven {
-			url = 'https://maven.maxhenkel.de/repository/public'
-		}
 		gradlePluginPortal()
 		mavenLocal()
 	}
